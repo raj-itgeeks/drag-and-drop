@@ -1,28 +1,45 @@
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
+
 import { data } from "./data";
 import { ReactComponent as Drag } from "./drag.svg";
 
 import "./App.css";
 
 function App() {
-  const [enterEle, updateEnterEle] = useState({
+  //here I am handling states of levels
+  const [enterOne, updateEnterOne] = useState({
+    // this is the level which is in the top level middile line
     id: "",
     name: "",
     index: "",
   });
-  const [enterOne, updateEnterOne] = useState({
+  const [enterTwo, updateEnterTwo] = useState({
+    // this is the level that which indicate grand parants
     id: "",
     name: "",
     index: "",
   });
 
   const [enterNested, updateEnterNested] = useState({
+    // this is for the lower div of first nested
     id: "",
     name: "",
     index: "",
   });
+  const [enterFour, updateEnterFour] = useState({
+    // this is for the first nested parents
+    id: "",
+    name: "",
+    index: "",
+  });
+  const [enterFive, updateEnterFive] = useState({
+    // this is for the child nested
+    id: "",
+    name: "",
+    index: "",
+  });
+
   const [dat, updateDat] = useState(data);
   const [show, updateShow] = useState({
     bool: false,
@@ -33,71 +50,59 @@ function App() {
     id: "",
   });
 
-  // this is the initialization of tree
-  // const tree = new Tree();
-  // const node = new Node("level-one");
-  // tree.root = node;
-
-  // node.children.push(data);
-  // console.log(tree);
-  // // loop to create tree
-  // // for (let i = 0; i < data.length; i++) {
-
-  // //   if (data[i].children.length > 0) {
-
-  // //   }else{
-
-  // //   }
-  // // }
-
   // reorder function
-  function reorder(sourceIdx, destinationIdx) {
-    const newItems = Array.from(dat);
-    // newItems.splice
-
+  function reorder(sourceIdx, destinationIdx, data) {
+    const newItems = Array.from(data);
     const [removed] = newItems.splice(Number(sourceIdx), 1);
-    // console.log(removed, "this is removed", sourceIdx, destinationIdx);
     newItems.splice(Number(destinationIdx), 0, removed);
-
-    updateEnterEle({
-      id: "",
-      index: "",
-    });
     updateEnterOne({
       id: "",
+      name: "",
+      index: "",
+    });
+    updateEnterTwo({
+      id: "",
+      name: "",
       index: "",
     });
     updateEnterNested({
       id: "",
+      name: "",
+      index: "",
+    });
+    updateEnterFour({
+      id: "",
+      name: "",
+      index: "",
+    });
+    updateEnterFive({
+      id: "",
+      name: "",
       index: "",
     });
     return newItems;
   }
 
   //Add method to add element
-  function add(sourceIdx, destinationIdx, sourceId) {
-    const newItems = Array.from(dat);
+  function add(sourceIdx, destinationIdx, sourceId, data) {
+    const newItems = Array.from(data);
     const removed = [];
 
     newItems.map((ele, index) => {
       if (ele.id === sourceId) {
-        const Items = reorder(sourceIdx, destinationIdx);
-
+        const Items = reorder(sourceIdx, destinationIdx, newItems);
         updateDat(Items);
         return;
       } else {
-        ele.subMenu?.map((e, i) => {
+        ele.child?.map((e, i) => {
           if (e.id === sourceId) {
-            const eke = newItems[index].subMenu?.splice(i, 1);
+            const eke = newItems[index].child?.splice(i, 1);
 
             removed.push(eke[0]);
           } else {
-            e.nestedSubMenu?.map((ne, idx) => {
+            e.child?.map((ne, idx) => {
               if (ne.id === sourceId) {
-                const ele = newItems[index].subMenu[i].nestedSubMenu?.splice(
-                  idx,
-                  1
-                );
+                const ele = newItems[index].child[i].child?.splice(idx, 1);
                 console.log(ele);
                 removed.push(ele[0]);
               }
@@ -112,13 +117,12 @@ function App() {
       newItems.splice(Number(destinationIdx), 0, removed[0]);
       updateDat(newItems);
     }
-   
 
-    updateEnterEle({
+    updateEnterOne({
       id: "",
       index: "",
     });
-    updateEnterOne({
+    updateEnterTwo({
       id: "",
       index: "",
     });
@@ -126,6 +130,110 @@ function App() {
       id: "",
       index: "",
     });
+  }
+
+  // this is a function to add a child to menu
+  function addChild(sourceId, sourceIndex, ele) {
+    const newItems = Array.from(dat);
+    newItems.map((element, index) => {
+      if (element.id === sourceId) {
+        const [removed] = newItems.splice(Number(sourceIndex), 1);
+        newItems[Number(ele.index) - 1].child.push(removed);
+        console.log(newItems);
+
+        updateDat(newItems);
+        return;
+      } else {
+        element.child?.map((subMenu, idx) => {
+          if (subMenu.id === sourceId) {
+            const [removed] = newItems[index].child.splice(
+              Number(sourceIndex),
+              1
+            );
+            newItems[Number(ele.index)].child.push(removed);
+            updateDat(newItems);
+            return;
+          } else {
+            subMenu.child.map((nestedMenu) => {
+              if (nestedMenu.id === sourceId) {
+                const [removed] = newItems[index].child[idx].child.slice(
+                  Number(sourceIndex),
+                  1
+                );
+                newItems[Number(ele.index)].child.push(removed);
+                updateDat(newItems);
+                return;
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  // function for sub menu operationss
+  function submenuOperation(sourceId, sourceIndex, ele) {
+    const newItems = Array.from(dat);
+
+    const isGrand = newItems.some((ele) => {
+      if (ele.id === sourceId) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (isGrand) {
+      
+      const [removed] = newItems.splice(Number(sourceIndex), 1);
+
+      newItems.forEach((objone, indexone) => {
+        if(objone.child){
+        objone.child.forEach((objtwo, indextwo) => {
+          console.log(objtwo.id,ele.id)
+          if (objtwo.id === ele.id) {
+            newItems[indexone].child.splice(Number(ele.index), 0, removed);
+            updateDat(newItems);
+          }
+        });
+      }
+      });
+    }
+
+    // newItems.map((obj, indexone) => {
+    //   if (obj.id === sourceId) {
+    //     const [removed] = newItems.splice(Number(sourceIndex), 1);
+    //     for (let i = 0; i < newItems.length; i++) {
+    //       newItems[i].child?.map((objtwo, indexthree) => {
+    //         if (objtwo.id === ele.id) {
+    //           newItems[i].child.splice(Number(ele.index), 0, removed);
+    //           updateDat(newItems);
+    //           return
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     obj.child?.map((objOne, indextwo) => {
+    //       if (objOne.id === sourceId) {
+    //         const items = reorder(
+    //           sourceIndex,
+    //           ele.index,
+    //           newItems[indexone].child
+    //         );
+    //         newItems[indexone].child = [...items];
+    //         console.log(newItems);
+    //       } else {
+    //         objOne.child?.map((objTwo, indexthree) => {
+    //           if (objTwo.id === sourceId) {
+    //             const [removed] = newItems[indexone].child[
+    //               indextwo
+    //             ].child.splice(Number(sourceIndex), 1);
+    //             newItems[indexone].child.splice(Number(ele.index), 0, removed);
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   // this is a swap function to
@@ -138,28 +246,27 @@ function App() {
   }
   //handle Drage Capture
   function handleDragCapture(index, idx) {
-    if (enterOne.name == "level-one") {
-      add(index, enterOne.index, idx);
+    if (enterTwo.name == "level-one") {
+      add(index, enterTwo.index, idx, dat);
     }
-    if (enterEle.name == "level-two") {
-      //1 append in anyone
+    if (enterOne.name == "level-two") {
+      //1 append child
+      addChild(idx, index, enterOne);
     }
-
+    if (enterNested.name == "level-three") {
+      //1 reorder
+      //2 append to sibling
+      submenuOperation(idx, index, enterNested);
+    }
+    if (enterFour.name == "level-four") {
+      console.log("hum level four me hain", idx, index, enterFour);
+    }
   }
-
-  // get the element on which our dragging element is present
-
-  function getElement(id) {
-    const ele = document.getElementById(id);
-    console.log(ele.offsetTop, ele.offsetLeft);
-  }
-
-  //
 
   return (
     <div className="App">
-      <Header />
-      <div>{enterEle?.id}</div>
+      {/* <Header /> */}
+      {/* <div>{enterOne?.id}</div> */}
       <div
         style={{
           padding: "40px",
@@ -184,7 +291,7 @@ function App() {
             <div key={index} id={option?.id}>
               <div
                 style={
-                  option?.id === enterEle?.id
+                  option?.id === enterOne?.id
                     ? {
                         borderBottom: "4px solid blue",
                         marginLeft: "8px",
@@ -216,15 +323,15 @@ function App() {
                 onDragEnter={(e) => {
                   e.preventDefault();
 
-                  updateEnterEle({
+                  updateEnterOne({
                     id: option?.id,
-                    name: "menu",
+                    name: "level-two",
                     index: `${index}`,
                   });
                 }}
                 onDragExitCapture={(e) => {
                   e.preventDefault();
-                  updateEnterEle({
+                  updateEnterOne({
                     id: "",
                     index: "",
                   });
@@ -244,136 +351,200 @@ function App() {
 
               {show.bool &&
                 show.id === option?.id &&
-                option?.subMenu.length > 0 && (
+                option?.child.length > 0 && (
                   <div
                     style={{
                       paddingLeft: "20px",
                     }}
                   >
-                    {option.subMenu.map((child, index) => {
+                    {option.child.map((child, index) => {
                       return (
                         <div
-                          style={
-                            child.id === enterNested?.id
-                              ? {
-                                  borderBottom: "4px solid blue",
-                                }
-                              : {
-                                  display: "block",
-                                }
-                          }
                           key={index}
+                          style={{
+                            padding: "10px",
+                          }}
                         >
                           <div
                             style={{
-                              border: "1px solid black",
-                              margin: "10px",
-                            }}
-                            id={child.id}
-                            index={index}
-                            draggable={true}
-                            onDragStart={(e) => {
-                              // e.preventDefault();
-                              e.dataTransfer.setData(
-                                "text",
-                                e.currentTarget.id
-                              );
-                              e.dataTransfer.setData("index", index);
-                            }}
-                            onDragEnter={(e) => {
-                              e.preventDefault();
-                              updateEnterNested({
-                                id: child.id,
-                                name: "level-submenu",
-                                index: `${index}`,
-                              });
-                            }}
-                            onDragExit={(e) => {
-                              e.preventDefault();
-                              updateEnterNested({
-                                id: "",
-                                index: "",
-                              });
+                              paddingLeft: "20px",
                             }}
                           >
                             <div
-                              style={{
-                                padding: "5px",
-                                display: "flex",
-                                gap: "5px",
-                                alignItems: "center",
+                              style={
+                                child.id === enterFour?.id
+                                  ? {
+                                      display: "block",
+                                      borderTop: "1px solid black",
+                                      borderRight: "1px solid black",
+                                      borderLeft: "1px solid black",
+                                      borderBottom: "4px solid blue",
+                                    }
+                                  : {
+                                      border: "1px solid black",
+                                      display: "block",
+                                    }
+                              }
+                              id={child.id}
+                              index={index}
+                              draggable={true}
+                              onDragStart={(e) => {
+                                // e.preventDefault();
+                                e.dataTransfer.setData("text", child.id);
+                                e.dataTransfer.setData("index", index);
+                              }}
+                              onDragEnter={(e) => {
+                                e.preventDefault();
+                                updateEnterFour({
+                                  id: child.id,
+                                  name: "level-four",
+                                  index: `${index}`,
+                                });
+                              }}
+                              onDragExit={(e) => {
+                                e.preventDefault();
+                                updateEnterFour({
+                                  id: "",
+                                  name: "",
+                                  index: "",
+                                });
+                                updateEnterNested({
+                                  id: "",
+                                  name: "",
+                                  index: "",
+                                });
                               }}
                             >
-                              <Drag></Drag>
-                              {child.name}
-                              <button
-                                onClick={() => {
-                                  updateShowChil({
-                                    bool: !showChild.bool,
-                                    id: child.id,
-                                  });
+                              <div
+                                style={{
+                                  padding: "5px",
+                                  display: "flex",
+                                  gap: "5px",
+                                  alignItems: "center",
                                 }}
                               >
-                                Open
-                              </button>
+                                <Drag></Drag>
+                                {child.name}
+                                <button
+                                  onClick={() => {
+                                    updateShowChil({
+                                      bool: !showChild.bool,
+                                      id: child.id,
+                                    });
+                                  }}
+                                >
+                                  Open
+                                </button>
+                              </div>
                             </div>
+
+                            {showChild.bool &&
+                              child.id === showChild.id &&
+                              child.child.length > 0 && (
+                                <div>
+                                  {child.child.map((subele, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        style={
+                                          subele.id == enterNested.id
+                                            ? {
+                                                border: "1px solid black",
+                                                margin: "3px",
+                                                padding: "5px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                marginLeft: "40px",
+                                                gap: "5px",
+                                              }
+                                            : {
+                                                border: "1px solid black",
+                                                margin: "3px",
+                                                padding: "5px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                marginLeft: "40px",
+                                                gap: "5px",
+                                              }
+                                        }
+                                        draggable={true}
+                                        onDragStart={(e) => {
+                                          // e.preventDefault();
+                                          e.dataTransfer.setData(
+                                            "text",
+                                            e.currentTarget.id
+                                          );
+                                          e.dataTransfer.setData(
+                                            "index",
+                                            index
+                                          );
+                                        }}
+                                        onDragEnter={(e) => {
+                                          e.preventDefault();
+                                          updateEnterNested({
+                                            id: `${subele.id}`,
+                                            name: "level-three",
+                                            index: `${index}`,
+                                          });
+                                        }}
+                                      >
+                                        <Drag strokeWidth={1}></Drag>
+
+                                        {subele.name}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                           </div>
 
-                          {showChild.bool &&
-                            child.id === showChild.id &&
-                            child.nestedSubMenu.length > 0 && (
-                              <div>
-                                {child.nestedSubMenu.map((subele, index) => {
-                                  return (
-                                    <div
-                                      key={index}
-                                      style={
-                                        subele.id == enterNested.id
-                                          ? {
-                                              borderBottom: "4px solid blue",
-                                              border: "1px solid black",
-                                              margin: "3px",
-                                              padding: "5px",
-                                              display: "flex",
-                                              alignItems: "center",
-                                              marginLeft: "40px",
-                                              gap: "5px",
-                                            }
-                                          : {
-                                              border: "1px solid black",
-                                              margin: "3px",
-                                              padding: "5px",
-                                              display: "flex",
-                                              alignItems: "center",
-                                              marginLeft: "40px",
-                                              gap: "5px",
-                                            }
-                                      }
-                                      draggable={true}
-                                      onDragStart={(e) => {
-                                        // e.preventDefault();
-                                        e.dataTransfer.setData(
-                                          "text",
-                                          e.currentTarget.id
-                                        );
-                                        e.dataTransfer.setData("index", index);
-                                      }}
-                                      onDragEnter={(e) => {
-                                        e.preventDefault();
-                                        updateEnterNested({
-                                          id: `${subele.id}`,
-                                          index: `${index}`,
-                                        });
-                                      }}
-                                    >
-                                      <Drag strokeWidth={1}></Drag>
-
-                                      {subele.name}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
+                          <div
+                            style={
+                              `${index}` === enterNested.index
+                                ? {
+                                    height: "20px",
+                                    width: "100%",
+                                    borderBottom: "4px solid blue",
+                                  }
+                                : {
+                                    // display:"none",
+                                    height: "10px",
+                                    width: "100%",
+                                  }
+                            }
+                            onDragEnter={(e) => {
+                              e.preventDefault();
+                              // let idx = e.dataTransfer.getData("text");
+                              updateEnterNested({
+                                id: child.id,
+                                name: "level-three",
+                                index: `${index}`,
+                              });
+                              updateEnterOne({
+                                id: "",
+                                name: "",
+                                index: "",
+                              });
+                              updateEnterTwo({
+                                id: "",
+                                name: "",
+                                index: "",
+                              });
+                              updateEnterFour({
+                                id: "",
+                                name: "",
+                                index: "",
+                              });
+                            }}
+                            onDragLeave={(e) => {
+                              e.preventDefault();
+                              updateEnterNested({
+                                id: "",
+                                name: "",
+                                index: "",
+                              });
+                            }}
+                          ></div>
                         </div>
                       );
                     })}
@@ -381,7 +552,7 @@ function App() {
                 )}
               <div
                 style={
-                  `${index}` === enterOne.index
+                  `${index}` === enterTwo.index
                     ? {
                         height: "20px",
                         width: "100%",
@@ -395,22 +566,22 @@ function App() {
                 onDragEnter={(e) => {
                   e.preventDefault();
                   // let idx = e.dataTransfer.getData("text");
-                  updateEnterOne({
+                  updateEnterTwo({
                     id: option.id,
                     name: "level-one",
                     index: `${index}`,
                   });
-                  updateEnterEle({
-                    id:"",
-                    name:"",
-                    index:""
-                  })
+                  updateEnterOne({
+                    id: "",
+                    name: "",
+                    index: "",
+                  });
                 }}
                 onDragLeave={(e) => {
                   e.preventDefault();
-                  updateEnterOne({
+                  updateEnterTwo({
                     id: "",
-                    name:"",
+                    name: "",
                     index: "",
                   });
                 }}
@@ -418,8 +589,6 @@ function App() {
             </div>
           );
         })}
-
-        <div></div>
       </div>
     </div>
   );
