@@ -50,11 +50,8 @@ function App() {
     id: "",
   });
 
-  // reorder function
-  function reorder(sourceIdx, destinationIdx, data) {
-    const newItems = Array.from(data);
-    const [removed] = newItems.splice(Number(sourceIdx), 1);
-    newItems.splice(Number(destinationIdx), 0, removed);
+  // function to reorder our states
+  function refresh() {
     updateEnterOne({
       id: "",
       name: "",
@@ -80,6 +77,14 @@ function App() {
       name: "",
       index: "",
     });
+  }
+
+  // reorder function
+  function reorder(sourceIdx, destinationIdx, data) {
+    const newItems = Array.from(data);
+    const [removed] = newItems.splice(Number(sourceIdx), 1);
+    newItems.splice(Number(destinationIdx), 0, removed);
+    refresh();
     return newItems;
   }
 
@@ -114,22 +119,10 @@ function App() {
 
     if ((removed[0] != undefined) | null) {
       console.log("true hai", removed[0]);
-      newItems.splice(Number(destinationIdx), 0, removed[0]);
+      newItems.splice(Number(destinationIdx) + 1, 0, removed[0]);
       updateDat(newItems);
     }
-
-    updateEnterOne({
-      id: "",
-      index: "",
-    });
-    updateEnterTwo({
-      id: "",
-      index: "",
-    });
-    updateEnterNested({
-      id: "",
-      index: "",
-    });
+    refresh();
   }
 
   // this is a function to add a child to menu
@@ -166,6 +159,7 @@ function App() {
               }
             });
           }
+          refresh();
         });
       }
     });
@@ -183,57 +177,50 @@ function App() {
       }
     });
     if (isGrand) {
-      
       const [removed] = newItems.splice(Number(sourceIndex), 1);
-
       newItems.forEach((objone, indexone) => {
-        if(objone.child){
-        objone.child.forEach((objtwo, indextwo) => {
-          console.log(objtwo.id,ele.id)
-          if (objtwo.id === ele.id) {
-            newItems[indexone].child.splice(Number(ele.index), 0, removed);
-            updateDat(newItems);
+        if (objone.child) {
+          objone.child.forEach((objtwo, indextwo) => {
+            console.log(objtwo.id, ele.id);
+            if (objtwo.id === ele.id) {
+             
+              newItems[indexone].child?.splice(
+                Number(ele.index + 1),
+                0,
+                removed
+              );
+              updateDat(newItems);
+            }
+          });
+        }
+      });
+
+      refresh();
+    }else {
+      newItems.forEach((obj,indexone)=>{
+        obj.child?.forEach((objOne, indextwo) => {
+          if (objOne.id === sourceId) {
+            const items = reorder(
+              sourceIndex,
+              ele.index,
+              newItems[indexone].child
+            );
+            newItems[indexone].child = [...items];
+            console.log(newItems);
+          } else {
+            objOne.child?.forEach((objTwo, indexthree) => {
+              if (objTwo.id === sourceId) {
+                const [removed] = newItems[indexone].child[
+                  indextwo
+                ].child.splice(Number(sourceIndex), 1);
+                newItems[indexone].child.splice(Number(ele.index)+1, 0, removed);
+              }
+            });
           }
         });
-      }
-      });
+      })
     }
-
-    // newItems.map((obj, indexone) => {
-    //   if (obj.id === sourceId) {
-    //     const [removed] = newItems.splice(Number(sourceIndex), 1);
-    //     for (let i = 0; i < newItems.length; i++) {
-    //       newItems[i].child?.map((objtwo, indexthree) => {
-    //         if (objtwo.id === ele.id) {
-    //           newItems[i].child.splice(Number(ele.index), 0, removed);
-    //           updateDat(newItems);
-    //           return
-    //         }
-    //       });
-    //     }
-    //   } else {
-    //     obj.child?.map((objOne, indextwo) => {
-    //       if (objOne.id === sourceId) {
-    //         const items = reorder(
-    //           sourceIndex,
-    //           ele.index,
-    //           newItems[indexone].child
-    //         );
-    //         newItems[indexone].child = [...items];
-    //         console.log(newItems);
-    //       } else {
-    //         objOne.child?.map((objTwo, indexthree) => {
-    //           if (objTwo.id === sourceId) {
-    //             const [removed] = newItems[indexone].child[
-    //               indextwo
-    //             ].child.splice(Number(sourceIndex), 1);
-    //             newItems[indexone].child.splice(Number(ele.index), 0, removed);
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
+    
   }
 
   // this is a swap function to
