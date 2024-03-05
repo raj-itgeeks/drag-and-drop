@@ -1,0 +1,30 @@
+
+
+.container {
+  width: 400px;
+  margin: 0 auto;
+}
+
+.nested {
+  padding: 4px 0;
+  border: 1px dotted #bbb;
+}
+/* @keyframes animat {
+  0% {
+    transform: translateX(0%);
+  }
+  100%{
+    transform: translateX(20%);
+  }
+}
+
+.item {
+  animation: animat 5s linear infinite forwards;
+  animation-delay: 20s;
+  padding: 8px;
+}
+.item2{
+  animation: animat 5s linear infinite reverse;
+  animation-delay: 20s;
+  padding: 8px;
+} */
