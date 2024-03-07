@@ -122,38 +122,20 @@ data.forEach((e) => {
 
 function App() {
   const [treee, updateTreee] = useState(tree);
-  //here I am handling states of levels
-  const [enterOne, updateEnterOne] = useState({
-    // this is the level which is in the top level middile line
-    id: "",
-    name: "",
-    index: "",
-  });
-  const [enterTwo, updateEnterTwo] = useState({
-    // this is the level that which indicate grand parants
-    id: "",
-    name: "",
-    index: "",
-  });
 
-  const [enterThree, updateEnterThree] = useState({
-    // this is for the lower div of first nested
-    id: "",
-    name: "",
-    index: "",
-  });
-  const [enterFour, updateEnterFour] = useState({
-    // this is for the first nested parents
-    id: "",
-    name: "",
-    index: "",
-  });
-  const [enterFive, updateEnterFive] = useState({
-    // this is for the child nested
-    id: "",
-    name: "",
-    index: "",
-  });
+  const level={
+    id:"",
+    name:"",
+    index:""
+  }
+  //here I am handling states of levels
+  const [enterOne, updateEnterOne] = useState(level);
+  const [enterTwo, updateEnterTwo] = useState(level);
+  const [enterThree, updateEnterThree] = useState(level);
+  const [enterFour, updateEnterFour] = useState(level);
+  const [enterFive, updateEnterFive] = useState(level);
+
+  
   const [show, updateShow] = useState({
     bool: false,
     id: "",
@@ -604,7 +586,7 @@ function App() {
                                   name: "",
                                   index: "",
                                 });
-                                
+
                               }}
                             ></div>
                           </div>
