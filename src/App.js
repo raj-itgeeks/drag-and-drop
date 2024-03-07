@@ -8,7 +8,7 @@ import "./App.css";
 // we create a class for each node in our treee
 class Node {
   // each node has three properties, its value, a pointer
-  constructor(key, value = key, parent = null, path) {
+  constructor(key, value = key, parent = null, path = null) {
     this.key = key;
     this.path = path;
     this.value = value;
@@ -26,8 +26,8 @@ class Node {
 
 // we create a class for our tree
 class Tree {
-  constructor(key, value = key, path) {
-    this.root = new Node(key, value, path);
+  constructor(key, value = key) {
+    this.root = new Node(key, value);
   }
 
   // this is the method to pre order travers in a tree
@@ -65,7 +65,7 @@ class Tree {
   insertDest(parentNodeKeyey, destinationIdx, obj) {
     for (let node of this.preOrderTraversal()) {
       if (node.key === parentNodeKeyey) {
-        node.descendants.splice(Number(destinationIdx), 0, obj);
+        node.descendants.splice(Number(destinationIdx) + 1, 0, obj);
         return true;
       }
     }
@@ -96,32 +96,31 @@ class Tree {
   reorder(sourceIdx, destinationIdx, key) {
     for (let node of this.preOrderTraversal()) {
       if (node.key === key) {
-        const [removed] = node.descendants.splice(Number(sourceIdx), 1);
-        node.descendants.splice(Number(destinationIdx), 0, removed);
+        const removed = node.descendants.splice(Number(sourceIdx), 1);
+        console.log("me dusri bar remove hua", removed[0]);
+        node.descendants.splice(Number(destinationIdx)+1, 0, removed[0]);
         return true;
       }
     }
     return false;
   }
 }
+const tree = new Tree(1, "tree");
+data.forEach((e) => {
+  tree.insert(1, e.id, e.name, e.Path);
+  if (e.child) {
+    e.child.forEach((f) => {
+      tree.insert(e.id, f.id, f.name, f.Path);
+      if (f.child) {
+        f.child.forEach((g) => {
+          tree.insert(f.id, g.id, g.name, g.Path);
+        });
+      }
+    });
+  }
+});
 
 function App() {
-  //  here i am testing my tree data structer
-  const tree = new Tree(1, "tree", "path");
-
-  data.forEach((e) => {
-    tree.insert(1, e.id, e.name, e.Path);
-    if (e.child) {
-      e.child.forEach((f) => {
-        tree.insert(e.id, f.id, f.name, f.Path);
-        if (f.child) {
-          f.child.forEach((g) => {
-            tree.insert(f.id, g.id, g.name, g.Path);
-          });
-        }
-      });
-    }
-  });
   const [treee, updateTreee] = useState(tree);
   //here I am handling states of levels
   const [enterOne, updateEnterOne] = useState({
@@ -155,8 +154,6 @@ function App() {
     name: "",
     index: "",
   });
-
-  const [dat, updateDat] = useState(data);
   const [show, updateShow] = useState({
     bool: false,
     id: "",
@@ -195,20 +192,11 @@ function App() {
     });
   }
 
-  // reorder function
-  function reorder(sourceIdx, destinationIdx, data) {
-    const newItems = Array.from(data);
-    const [removed] = newItems.splice(Number(sourceIdx), 1);
-    newItems.splice(Number(destinationIdx), 0, removed);
-    refresh();
-    return newItems;
-  }
 
   //Add method to add element
   function add(sourceIdx, destinationIdx, sourceId, destinationID) {
     const isSource = tree.find(sourceId);
     const isDestinaton = tree.find(destinationID);
-
     if (isSource.parent.key === isDestinaton.parent.key) {
       tree.reorder(sourceIdx, destinationIdx, isDestinaton.parent.key);
     } else {
@@ -224,84 +212,16 @@ function App() {
     const isSource = tree.find(sourceId);
     const isDestinaton = tree.find(ele.id);
     tree.remove(isSource.key);
-    tree.insertDest(isDestinaton.key, ele.index,isSource);
+    tree.insertDest(isDestinaton.key, ele.index, isSource);
     updateTreee(tree);
     refresh();
   }
 
-  // function for sub menu operationss
-  // function submenuOperation(sourceId, sourceIndex, ele) {
-  //   const isSource=tree.find(sourceId);
-  //   const isDestinaton=tree.find(ele.id);
-
-  //   const isGrand = newItems.some((ele) => {
-  //     if (ele.id === sourceId) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   });
-  //   if (isGrand) {
-  //     const [removed] = newItems.splice(Number(sourceIndex), 1);
-  //     newItems.forEach((objone, indexone) => {
-  //       if (objone.child) {
-  //         objone.child.forEach((objtwo, indextwo) => {
-  //           console.log(objtwo.id, ele.id);
-  //           if (objtwo.id === ele.id) {
-  //             newItems[indexone].child?.splice(
-  //               Number(ele.index + 1),
-  //               0,
-  //               removed
-  //             );
-  //             updateDat(newItems);
-  //           }
-  //         });
-  //       }
-  //     });
-
-  //     refresh();
-  //   } else {
-  //     newItems.forEach((obj, indexone) => {
-  //       obj.child?.forEach((objOne, indextwo) => {
-  //         if (objOne.id === sourceId) {
-  //           const items = reorder(
-  //             sourceIndex,
-  //             ele.index,
-  //             newItems[indexone].child
-  //           );
-  //           newItems[indexone].child = [...items];
-  //           console.log(newItems);
-  //         } else {
-  //           objOne.child?.forEach((objTwo, indexthree) => {
-  //             if (objTwo.id === sourceId) {
-  //               const [removed] = newItems[indexone].child[
-  //                 indextwo
-  //               ].child.splice(Number(sourceIndex), 1);
-  //               newItems[indexone].child.splice(
-  //                 Number(ele.index) + 1,
-  //                 0,
-  //                 removed
-  //               );
-  //             }
-  //           });
-  //         }
-  //       });
-  //     });
-  //   }
-  // }
-
-  // this is a swap function to
-  function swap(index, idx) {
-    const newItems = Array.from(data);
-    const [removed] = newItems.splice(Number(index), 1);
-    newItems[idx - 1].children.push(removed);
-    // console.log(newItems);
-    updateDat(newItems);
-  }
   //handle Drage Capture
   function handleDragCapture(index, idx) {
     if (enterOne.name == "level-one") {
       //1 append child
+      // reorder(index,enterOne.index,idx,enterOne.id)
       add(index, enterOne.index, idx, enterOne.id);
     }
 
@@ -312,18 +232,17 @@ function App() {
     if (enterThree.name == "level-three") {
       //1 reorder
       //2 append to sibling
-      // submenuOperation(idx, index, enterThree);
+
       add(index, enterThree.index, idx, enterThree.id);
     }
 
     if (enterFour.name == "level-four") {
       addChild(idx, enterFour);
     }
-   
+
     if (enterFive.name == "level-five") {
       add(index, enterFive.index, idx, enterFive.id);
     }
-   
   }
 
   return (
@@ -390,6 +309,16 @@ function App() {
                       index: `${index}`,
                     });
                     updateEnterFour({
+                      id: "",
+                      name: "",
+                      index: "",
+                    });
+                    updateEnterOne({
+                      id:"",
+                      name:"",
+                      index:""
+                    });
+                    updateEnterThree({
                       id:"",
                       name:"",
                       index:""
@@ -402,6 +331,7 @@ function App() {
                       name: "",
                       index: "",
                     });
+
                   }}
                 >
                   <Drag></Drag>
@@ -468,15 +398,15 @@ function App() {
                                     index: `${index}`,
                                   });
                                   updateEnterTwo({
-                                    id:"",
-                                    name:"",
-                                    index:""
-                                  })
+                                    id: "",
+                                    name: "",
+                                    index: "",
+                                  });
                                   updateEnterFive({
-                                    id:"",
-                                    name:"",
-                                    index:""
-                                  })
+                                    id: "",
+                                    name: "",
+                                    index: "",
+                                  });
                                 }}
                                 onDragExit={(e) => {
                                   e.preventDefault();
@@ -491,10 +421,10 @@ function App() {
                                     index: "",
                                   });
                                   updateEnterTwo({
-                                    id:"",
-                                    name:"",
-                                    index:""
-                                  })
+                                    id: "",
+                                    name: "",
+                                    index: "",
+                                  });
                                 }}
                               >
                                 <div
@@ -589,19 +519,29 @@ function App() {
                                                 index: `${index}`,
                                               });
                                               updateEnterFour({
+                                                id: "",
+                                                name: "",
+                                                index: "",
+                                              });
+                                              updateEnterThree({
+                                                id: "",
+                                                name: "",
+                                                index: "",
+                                              });
+                                            }}
+                                            onDragExit={(e) => {
+                                              e.preventDefault();
+                                              updateEnterFive({
+                                                id: "",
+                                                name: "",
+                                                index: "",
+                                              });
+                                              updateEnterTwo({
                                                 id:"",
                                                 name:"",
                                                 index:""
                                               })
                                               updateEnterThree({
-                                                id:"",
-                                                name:"",
-                                                index:""
-                                              })
-                                            }}
-                                            onDragExit={(e)=>{
-                                              e.preventDefault();
-                                              updateEnterFive({
                                                 id:"",
                                                 name:"",
                                                 index:""
@@ -651,6 +591,11 @@ function App() {
                                   name: "",
                                   index: "",
                                 });
+                                updateEnterFive({
+                                  id:"",
+                                  name:"",
+                                  index:""
+                                })
                               }}
                               onDragLeave={(e) => {
                                 e.preventDefault();
@@ -659,6 +604,7 @@ function App() {
                                   name: "",
                                   index: "",
                                 });
+                                
                               }}
                             ></div>
                           </div>
