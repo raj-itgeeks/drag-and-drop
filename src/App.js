@@ -135,7 +135,7 @@ function App() {
   const [enterFour, updateEnterFour] = useState(level);
   const [enterFive, updateEnterFive] = useState(level);
 
-  
+
   const [show, updateShow] = useState({
     bool: false,
     id: "",
@@ -147,31 +147,11 @@ function App() {
 
   // function to reorder our states
   function refresh() {
-    updateEnterOne({
-      id: "",
-      name: "",
-      index: "",
-    });
-    updateEnterTwo({
-      id: "",
-      name: "",
-      index: "",
-    });
-    updateEnterThree({
-      id: "",
-      name: "",
-      index: "",
-    });
-    updateEnterFour({
-      id: "",
-      name: "",
-      index: "",
-    });
-    updateEnterFive({
-      id: "",
-      name: "",
-      index: "",
-    });
+    updateEnterOne(level);
+    updateEnterTwo(level);
+    updateEnterThree(level);
+    updateEnterFour(level);
+    updateEnterFive(level);
   }
 
 
@@ -290,29 +270,13 @@ function App() {
                       name: "level-two",
                       index: `${index}`,
                     });
-                    updateEnterFour({
-                      id: "",
-                      name: "",
-                      index: "",
-                    });
-                    updateEnterOne({
-                      id:"",
-                      name:"",
-                      index:""
-                    });
-                    updateEnterThree({
-                      id:"",
-                      name:"",
-                      index:""
-                    })
+                    updateEnterFour(level);
+                    updateEnterOne(level);
+                    updateEnterThree(level)
                   }}
                   onDragExitCapture={(e) => {
                     e.preventDefault();
-                    updateEnterTwo({
-                      id: "",
-                      name: "",
-                      index: "",
-                    });
+                    updateEnterTwo(level);
 
                   }}
                 >
@@ -379,34 +343,14 @@ function App() {
                                     name: "level-four",
                                     index: `${index}`,
                                   });
-                                  updateEnterTwo({
-                                    id: "",
-                                    name: "",
-                                    index: "",
-                                  });
-                                  updateEnterFive({
-                                    id: "",
-                                    name: "",
-                                    index: "",
-                                  });
+                                  updateEnterTwo(level);
+                                  updateEnterFive(level);
                                 }}
                                 onDragExit={(e) => {
                                   e.preventDefault();
-                                  updateEnterFour({
-                                    id: "",
-                                    name: "",
-                                    index: "",
-                                  });
-                                  updateEnterThree({
-                                    id: "",
-                                    name: "",
-                                    index: "",
-                                  });
-                                  updateEnterTwo({
-                                    id: "",
-                                    name: "",
-                                    index: "",
-                                  });
+                                  updateEnterFour(level);
+                                  updateEnterThree(level);
+                                  updateEnterTwo(level);
                                 }}
                               >
                                 <div
@@ -500,34 +444,14 @@ function App() {
                                                 name: "level-five",
                                                 index: `${index}`,
                                               });
-                                              updateEnterFour({
-                                                id: "",
-                                                name: "",
-                                                index: "",
-                                              });
-                                              updateEnterThree({
-                                                id: "",
-                                                name: "",
-                                                index: "",
-                                              });
+                                              updateEnterFour(level);
+                                              updateEnterThree(level);
                                             }}
                                             onDragExit={(e) => {
                                               e.preventDefault();
-                                              updateEnterFive({
-                                                id: "",
-                                                name: "",
-                                                index: "",
-                                              });
-                                              updateEnterTwo({
-                                                id:"",
-                                                name:"",
-                                                index:""
-                                              })
-                                              updateEnterThree({
-                                                id:"",
-                                                name:"",
-                                                index:""
-                                              })
+                                              updateEnterFive(level);
+                                              updateEnterTwo(level)
+                                              updateEnterThree(level)
                                             }}
                                           ></div>
                                         </div>
@@ -558,34 +482,14 @@ function App() {
                                   name: "level-three",
                                   index: `${index}`,
                                 });
-                                updateEnterOne({
-                                  id: "",
-                                  name: "",
-                                  index: "",
-                                });
-                                updateEnterTwo({
-                                  id: "",
-                                  name: "",
-                                  index: "",
-                                });
-                                updateEnterFour({
-                                  id: "",
-                                  name: "",
-                                  index: "",
-                                });
-                                updateEnterFive({
-                                  id:"",
-                                  name:"",
-                                  index:""
-                                })
+                                updateEnterOne(level);
+                                updateEnterTwo(level);
+                                updateEnterFour(level);
+                                updateEnterFive(level)
                               }}
                               onDragLeave={(e) => {
                                 e.preventDefault();
-                                updateEnterThree({
-                                  id: "",
-                                  name: "",
-                                  index: "",
-                                });
+                                updateEnterThree(level);
 
                               }}
                             ></div>
@@ -615,19 +519,11 @@ function App() {
                       name: "level-one",
                       index: `${index}`,
                     });
-                    updateEnterTwo({
-                      id: "",
-                      name: "",
-                      index: "",
-                    });
+                    updateEnterTwo(level);
                   }}
                   onDragLeave={(e) => {
                     e.preventDefault();
-                    updateEnterOne({
-                      id: "",
-                      name: "",
-                      index: "",
-                    });
+                    updateEnterOne(level);
                   }}
                 ></div>
               </div>
